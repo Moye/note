@@ -39,7 +39,7 @@
 
 参考链接：[非常好用PHP模板引擎](https://juejin.im/post/5a0a458951882503dc5336c1)
 
-![模板引擎处理流程图](/Users/Moye/Desktop/准备秋招/note/pic/php-smarty-2.jpg)
+![模板引擎处理流程图](../pic/php-smarty-2.jpg)
 
 图源：[浅析PHP模板引擎](https://www.jianshu.com/p/941375980096)
 
@@ -75,7 +75,7 @@
 - 服务器和网关是相互独立的应用程序
 - 服务器时应用程序和网关之间的一座桥梁
 
-![CGI原理](/Users/Moye/Desktop/准备秋招/note/pic/php-fpm-cgi-3.png)
+![CGI原理](../pic/php-fpm-cgi-3.png)
 
 #### fast-cgi的改进
 
