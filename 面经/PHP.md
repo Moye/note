@@ -54,7 +54,7 @@
 
 ### cgi、fast-cgi协议
 
-#### （1）cgi的历史
+#### cgi的历史
 
 早期的webserver只处理html等静态文件，但是随着技术的发展，出现了像PHP等动态语言。webserver处理不了，怎么办呢？就需要交给PHP解释器来处理。
 
@@ -102,7 +102,7 @@ fast-cgi接口模拟了CGI，但FastCGI是作为持久守护进程运行的，�
 
 因为是多进程，所以比CGI多线程消耗更多的服务器内存。
 
-####（2）PHP-fpm是什么
+###PHP-fpm是什么
 
 php-fpm即`php-Fastcgi Process Manager`
 
