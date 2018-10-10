@@ -100,6 +100,20 @@ public:
 
 使用堆排序，可以使用优先级队列来实现一个小顶堆。
 
+[C++优先队列使用](https://blog.csdn.net/xiaoquantouer/article/details/52015928)
+
+> priority_queue<Type, Container, Functional>
+>
+> Type为数据类型， Container为保存数据的容器，Functional为元素比较方式。
+>
+> 1.如果不写后两个参数，那么容器默认用的是vector，比较方式默认用operator<，也就是优先队列是大顶堆，队头元素最大。
+>
+> 2.如果输出小数据，可以使用`priority_queue<int, vector<int>, greater<int> > que;`
+>
+> 3.可以自定义优先级，重载默认的<符号。
+>
+>   ---------------------  本文来自 小拳头 的CSDN 博客 ，全文地址请点击：https://blog.csdn.net/xiaoquantouer/article/details/52015928?utm_source=copy 
+
 ```c++
 /**
  * Definition for singly-linked list.
@@ -193,6 +207,422 @@ public:
         }
         
         return dummy.next;
+    }
+};
+```
+
+### 19.删除倒数第n个节点
+
+``` c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        // 要求只遍历一遍就，就可以删除倒数第N个节点
+        // 需要一个prev指针和一个curr指针，两个指针相隔N个节点。
+        if(!head->next)
+            return nullptr;
+        
+        ListNode* prev = head;
+        ListNode* curr = head;
+        for(size_t i = 0; i < n; ++i){
+            curr = curr->next;
+        }
+        if(!curr)
+            return head->next;
+        
+        while(curr->next){
+            curr = curr->next;
+            prev = prev->next;
+        }
+        prev->next = prev->next->next;
+        return head;
+    }
+};
+```
+
+[参考链接](http://www.cnblogs.com/grandyang/p/4606920.html)
+
+### 25. k个一组翻转链表
+
+``` c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        if(!head)
+            return nullptr;
+        ListNode dummy(-1);
+        dummy.next = head;
+        ListNode* head2 = &dummy;
+        ListNode* prev = head2->next;
+        ListNode* curr = head2->next;
+        bool isFirstK = false;// 判断是否为第一组k个节点，如果是，则记录下新链表的首节点指针
+        // head2 = head2->next;
+        while(curr){
+            prev = curr;
+            head2 = curr;
+            for(size_t i = 0; i < k-1; ++i){
+                if(!curr->next){
+                    // 如果不是k的个数，剩下的节点不变
+                    return dummy.next;
+                    break;
+                }
+                prev = prev->next;
+                curr = curr->next;
+            }
+            curr = curr->next;
+            prev->next = nullptr;
+            // reverse
+            head->next = reverse(head2);
+            head2->next = curr;
+            if(!isFirstK){
+                isFirstK = true;
+                dummy.next = prev;
+            }
+            head = head2;
+        }
+        return dummy.next;
+    }
+    
+private:
+    ListNode* reverse(ListNode* head){
+        ListNode dummy(-1);
+        ListNode* head2 = &dummy;
+        head2->next = head;
+        ListNode* prev = head2->next;
+        ListNode* curr = prev->next;
+        while(curr){
+            std::cout << "curr: " << curr->val << "prev: " << prev->val << endl;
+            
+            prev->next = curr->next;
+            curr->next = head2->next;
+            head2->next = curr;
+            curr = prev->next;
+            std::cout << "curr: " << head2->next->next->val << "prev: " << head2->next->val << endl;
+
+        }
+        
+        return dummy.next;
+
+    }
+};
+```
+
+### 61.旋转链表
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* rotateRight(ListNode* head, int k) {
+        
+        // 计算出链表长度，将后k%len个节点插在首结点之前即可。
+        if(!head)
+            return nullptr;
+        ListNode dummy(-1);
+        dummy.next = head;
+    
+        ListNode* pNode = &dummy;
+        ListNode* prev = &dummy;
+        int len = 0;
+        // 计算链表长度
+        while(pNode->next){
+            len++;
+            pNode = pNode->next;
+        }
+
+        int m = k%len;
+       
+        pNode = &dummy;
+         
+        std::cout << "len: " << len << endl;
+        for(size_t i = 0; i < m; ++i){
+            pNode = pNode->next;
+        }
+        std::cout << "pNode: " << pNode->val << endl;
+        while(pNode->next){
+            pNode = pNode->next;
+            prev = prev->next;
+        }
+        
+        pNode->next = dummy.next;
+        dummy.next = prev->next;
+        prev->next = nullptr;
+        
+        return dummy.next;
+        
+    }
+};
+```
+
+
+
+### 82.删除排序链表中的重复元素II
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* deleteDuplicates(ListNode* head) {
+        
+        if(!head)
+            return nullptr;
+        ListNode dummy(-1);
+        dummy.next = head;
+        ListNode* prev = &dummy;
+        ListNode* curr = head;
+        while(curr && curr->next){
+            if(curr->val != curr->next->val){
+                prev = prev->next;                
+            }else{
+                do{
+                    curr = curr->next;
+                }while(curr->next && curr->next->val == curr->val);
+                prev->next = curr->next;
+            }
+            curr = curr->next;
+        }
+        return dummy.next;
+    }
+};
+```
+
+### 83.删除排序链表中的重复元素I
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* deleteDuplicates(ListNode* head) {
+        
+        ListNode dummy(-1);
+        dummy.next = head;
+        ListNode* prev = &dummy;
+        ListNode* curr = head;
+        
+        while(curr && curr->next){
+            std::cout << "test: " << endl;
+            
+            while(curr->next && curr->val == curr->next->val){
+                curr = curr->next;
+            }
+            prev->next = curr;
+            prev = prev->next;
+            curr = curr->next;
+            
+        }
+        return dummy.next;
+    }
+};
+```
+
+###86.分隔链表
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* partition(ListNode* head, int x) {
+        ListNode dummy(-1);
+        dummy.next = head;
+        ListNode* prev = &dummy;
+        ListNode* pNode = prev;
+        ListNode* curr = head;
+        // 找到第一个值不小于x的节点。用curr指向它。
+        // pNode指向它的前一个节点, prev指向当前找到的最后一个值小于x的节点
+        while(curr && curr->val < x){
+            curr = curr->next;
+            prev = prev->next;
+            pNode = pNode->next;
+        }
+        while(curr){
+            if(curr->val < x){
+                pNode->next = curr->next;
+                curr->next = prev->next;
+                prev->next = curr;
+                curr = pNode->next;
+                prev = prev->next;
+            }else{
+                pNode = pNode->next;
+                curr = curr->next;
+            }
+        }
+        return dummy.next;
+    }
+};
+```
+
+### 141.环形链表
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        // 快慢指针，快指针一次走两步，慢指针一次走一步，两者相遇，即有环
+        // 假设走k步后相遇，则有方程k = 2k - len， 其中len为环的长度
+        if(!head || !head->next)
+            return false;
+        ListNode* fast = head;
+        ListNode* slow = head;
+        while(fast->next && fast->next->next && slow->next){
+            fast = fast->next->next;
+            slow = slow->next;
+            if(fast == slow){
+                return true;
+            }
+        }
+        return false;
+    }
+};
+```
+
+### 142.环形链表II
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        // 1.使用快慢指针找出环的长度len，即相遇时候，慢指针移动的次数,
+        //   快指针每次移动两个节点，慢指针每次移动一个节点.
+        // 2.重置快慢指针，使快指针先走len-1步，快慢指针每次向前移动一个节点.
+        if(!head || !head->next)
+            return nullptr;
+        ListNode* fast = head;
+        ListNode* slow = head;
+        size_t len = 0;
+        bool hasCycle = false;
+        while(fast->next && fast->next->next && slow->next){
+            slow = slow->next;
+            fast = fast->next->next;
+            len++;
+            if(slow == fast){
+                hasCycle = true;
+                break;
+            }
+        }
+        if(!hasCycle){// 无环直接返回null
+            return nullptr;
+        }
+        else{// 有环找到环开始的节点，并返回
+            fast = head;
+            slow = head;
+            while(len > 1){
+                fast = fast->next;
+                len--;
+            }
+
+            while(fast->next != slow){
+                fast = fast->next;
+                slow = slow->next;
+            }
+            return slow;
+        }
+    }
+};
+```
+
+###143.重排链表
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    void reorderList(ListNode* head) {
+        // 1.将链表最后节点插入到第1个节点之后
+        // 2.将新链表的最后一个节点插入到第3个节点之后
+        // ...
+        // 直到：a.节点数为偶数,最后插入位置为原链表的n/2-1个节点之后
+        //      b.节点数为奇数，最后插入位置为原链表的n/2个节点之后
+        if(!head || !head->next || !head->next->next) // 如果少于三个节点，链表保持不变
+            return;
+        ListNode* prev = head;
+        ListNode* curr = head;
+        ListNode* last = head;
+        
+        //当prev之后至少有两个节点时候，将最后一个节点（即curr->next），插入到prev之后
+        while(prev && prev->next && prev->next->next)
+        {
+            while(curr && curr->next && curr->next->next){ // 找到倒数第二个节点
+                //std::cout << "curr: " << curr->val << endl;
+                curr = curr->next;
+            }
+            last = curr->next;
+            curr->next = last->next;
+            last->next = prev->next;
+            prev->next = last;
+            //prev向前移动两个结点
+            prev = prev->next->next;
+            //curr指向prev
+            curr = prev;
+            std::cout << "last: " << last->val << endl;
+            
+        }
     }
 };
 ```
@@ -572,4 +1002,100 @@ public:
 ```
 
 [参考链接](http://www.cnblogs.com/grandyang/p/4318500.html)
+
+## 3.堆
+
+### 295.数据流的中位数
+
+方法一：数组保存数据
+
+插入时间复杂度`O(n)`，数组中插入元素的时候，后面的元素要后移
+
+查找时间复杂度`O(1)`
+
+```c++
+class MedianFinder {
+public:
+    /** initialize your data structure here. */
+    MedianFinder() {
+        
+    }
+    
+    void addNum(int num) {
+        // 利用二分查找法查找到插入位置
+        int left = 0;
+        int right = nums.size() - 1;
+        while(left <= right){
+            int mid = (left+right) / 2;
+            if(nums[mid] < num)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+        nums.insert(nums.begin()+left, num);
+    }
+    
+    double findMedian() {
+        int n = nums.size();
+        if(n % 2 == 1)
+            return nums[n/2];
+        else
+            return (nums[n/2-1]+nums[n/2])/2.0;
+    }
+    
+private:
+    vector<int> nums;
+};
+
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder obj = new MedianFinder();
+ * obj.addNum(num);
+ * double param_2 = obj.findMedian();
+ */
+```
+
+方法二：用一个大顶堆和一个小顶堆实现
+
+``` c++
+class MedianFinder {
+public:
+    /** initialize your data structure here. */
+    MedianFinder() {
+        
+    }
+    
+    void addNum(int num) {
+        small.push(num);
+        large.push(num);
+        std:cout << small.top() << ' ' << large.top() << endl;
+        small.pop();
+        if(small.size() < large.size()){
+            small.push(large.top());
+            large.pop();
+        }
+    }
+    
+    double findMedian() {
+        int n = small.size() + large.size();
+        if(n % 2 == 1)
+            return small.top();
+        else
+            return (small.top() + large.top())/2.0;
+    }
+    
+private:
+    // 利用两个堆，大顶堆保存较小的一半数，小顶堆保存较大的一半数
+    // 并保持两个堆大小平衡
+    priority_queue<int, vector<int>> small;
+    priority_queue<int, vector<int>, greater<int> > large;
+};
+
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder obj = new MedianFinder();
+ * obj.addNum(num);
+ * double param_2 = obj.findMedian();
+ */
+```
 
