@@ -197,8 +197,8 @@ void heapSort(vector<int>& array)
     }
 
     for (int j = len - 1; j > 0; --j) {
-        swap(array[0], array[j]); // 交换收尾元素，将最大值交换到数组的最后位置保存
-        heapBuild(array, 0, j);   // 去除最好位置的元素重新建堆，此处j表示数组的长度，最后一个位置下标变为len-2
+        swap(array[0], array[j]); // 交换首尾元素，将最大值交换到数组的最后位置保存
+        heapBuild(array, 0, j);   // 去除最后位置的元素重新建堆，此处j表示数组的长度，最后一个位置下标变为len-2
     }
 }
 
